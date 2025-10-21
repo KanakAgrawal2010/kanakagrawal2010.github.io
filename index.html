@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rideshare True Profit Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Color system for better contrast */
+            --primary-dark: #1a2332;
+            --primary-medium: #2c3e50;
+            --primary-light: #34495e;
+            --accent-green: #27ae60;
+            --accent-red: #e74c3c;
+            --accent-orange: #f39c12;
+            --accent-blue: #3498db;
+            --bg-white: #ffffff;
+            --bg-light: #f8f9fa;
+            --bg-section: #f1f3f5;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --border-light: #dee2e6;
+            --border-medium: #ced4da;
+            
+            /* Consistent spacing system (Repetition) */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Typography scale (Repetition) */
+            --font-xs: 12px;
+            --font-sm: 14px;
+            --font-md: 16px;
+            --font-lg: 18px;
+            --font-xl: 24px;
+            --font-xxl: 32px;
+            
+            /* Border radius (Repetition) */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-pill: 50px;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: clamp(10px, 2vw, 20px);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+        
+        /* Header section with strong contrast */
+        .header {
+            background: var(--primary-dark);
+            color: var(--bg-white);
+            padding: clamp(20px, 4vw, 32px) clamp(15px, 3vw, 24px);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+            pointer-events: none;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 15px);
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            height: clamp(32px, 5vw, 40px);
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: black;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            padding: 0 12px;
+        }
+        
+        .logo.uber {
+            width: clamp(60px, 10vw, 80px);
+            font-size: clamp(14px, 2.5vw, 18px);
+            font-family: 'Arial Black', sans-serif;
+        }
+        
+        .logo.lyft {
+            width: clamp(50px, 8vw, 60px);
+            background: #FF00BF;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            font-style: italic;
+            font-size: clamp(14px, 2.5vw, 18px);
+        }
+        
+        h1 {
+            font-size: clamp(20px, 4vw, var(--font-xxl));
+            font-weight: 800;
+            margin: 0 10px;
+            position: relative;
+        }
+        
+        .tagline {
+            font-size: clamp(14px, 3vw, var(--font-lg));
+            font-weight: 300;
+            opacity: 0.95;
+            position: relative;
+        }
+        
+        /* Main content wrapper */
+        .content-wrapper {
+            padding: clamp(15px, 3vw, 24px);
+        }
+        
+        /* Calculator sections with proximity grouping */
+        .calculator-section {
+            background: var(--bg-white);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            margin-bottom: clamp(15px, 3vw, 24px);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .calculator-section:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        
+        /* Section headers with consistent styling (Repetition) */
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-medium) 0%, var(--primary-light) 100%);
+            color: var(--bg-white);
+            padding: clamp(10px, 2vw, 16px) clamp(15px, 3vw, 24px);
+            font-weight: 700;
+            font-size: clamp(14px, 2.5vw, 18px);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            border-bottom: 3px solid rgba(255,255,255,0.1);
+        }
+        
+        .section-icon {
+            font-size: clamp(18px, 3vw, 24px);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        /* Input groups with proximity */
+        .input-group {
+            padding: clamp(10px, 2vw, 16px) clamp(15px, 3vw, 24px);
+            border-bottom: 1px solid var(--border-light);
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: clamp(10px, 2vw, 16px);
+        }
+        
+        .input-group:hover {
+            background: var(--bg-light);
+        }
+        
+        .input-group:last-child {
+            border-bottom: none;
+        }
+        
+        /* Labels with visual hierarchy (Contrast) */
+        .input-label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .label-icon {
+            font-size: clamp(16px, 2.5vw, 20px);
+            width: clamp(24px, 4vw, 28px);
+            height: clamp(24px, 4vw, 28px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-section);
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+        }
+        
+        .label-content {
+            flex: 1;
+        }
+        
+        .label-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: clamp(13px, 2.5vw, 16px);
+            margin-bottom: 2px;
+        }
+        
+        .label-subtitle {
+            font-size: clamp(11px, 2vw, 14px);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* Input fields with consistent styling (Repetition) */
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+            font-size: clamp(12px, 2vw, 14px);
+        }
+        
+        .input-wrapper span {
+            white-space: nowrap;
+        }
+        
+        input[type="number"], input[type="text"], select {
+            padding: clamp(4px, 1vw, 8px) clamp(8px, 1.5vw, 16px);
+            border: 2px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            font-size: clamp(13px, 2.5vw, 16px);
+            font-weight: 600;
+            width: clamp(60px, 12vw, 100px);
+            text-align: center;
+            transition: all 0.2s ease;
+            background: var(--bg-white);
+        }
+        
+        /* Hide spinner buttons */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="text"]::-webkit-inner-spin-button,
+        input[type="text"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"],
+        input[type="text"] {
+            -moz-appearance: textfield;
+        }
+        
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+            transform: translateY(-1px);
+        }
+        
+        select {
+            width: 180px;
+            cursor: pointer;
+        }
+        
+        /* Value displays with strong contrast */
+        .value-display {
+            min-width: auto;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        
+        .cost-badge {
+            display: inline-block;
+            padding: clamp(3px, 0.5vw, 4px) clamp(8px, 1.5vw, 12px);
+            border-radius: var(--radius-pill);
+            font-weight: 700;
+            font-size: clamp(11px, 2vw, 14px);
+            min-width: clamp(60px, 10vw, 80px);
+            text-align: center;
+        }
+        
+        .cost-badge.orange {
+            background: rgba(243,156,18,0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(243,156,18,0.3);
+        }
+        
+        .cost-badge.red {
+            background: rgba(231,76,60,0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(231,76,60,0.3);
+        }
+        
+        .cost-badge.green {
+            background: rgba(39,174,96,0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(39,174,96,0.3);
+        }
+        
+        /* Depreciation special layout */
+        .depreciation-formula {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+        
+        .formula-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .formula-label {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .formula-operator {
+            font-size: var(--font-lg);
+            font-weight: 700;
+            color: var(--text-secondary);
+            padding: 0 var(--spacing-xs);
+        }
+        
+        /* Summary cards with visual hierarchy */
+        .summary-card {
+            padding: clamp(10px, 2vw, 16px) clamp(15px, 3vw, 24px);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .summary-card.highlight {
+            background: var(--bg-section);
+        }
+        
+        .summary-card.total {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 100%);
+            color: var(--bg-white);
+            font-size: clamp(14px, 2.5vw, 18px);
+            font-weight: 700;
+        }
+        
+        /* Results section with strong visual impact */
+        .results-section {
+            background: var(--bg-white);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-top: clamp(20px, 4vw, 32px);
+        }
+        
+        .profit-summary {
+            background: linear-gradient(135deg, var(--accent-green) 0%, #229954 100%);
+            color: var(--bg-white);
+            padding: clamp(15px, 3vw, 24px);
+            text-align: center;
+        }
+        
+        .profit-title {
+            font-size: clamp(13px, 2.5vw, 16px);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            opacity: 0.95;
+        }
+        
+        .profit-amount {
+            font-size: clamp(28px, 6vw, 48px);
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .hourly-rate {
+            font-size: clamp(16px, 3vw, 24px);
+            font-weight: 600;
+            margin-top: var(--spacing-sm);
+            opacity: 0.95;
+        }
+        
+        /* Info pills for contextual information */
+        .info-pill {
+            display: inline-block;
+            background: rgba(52,152,219,0.1);
+            color: var(--accent-blue);
+            padding: 2px 10px;
+            border-radius: var(--radius-pill);
+            font-size: var(--font-xs);
+            font-weight: 600;
+            margin-left: var(--spacing-sm);
+        }
+        
+        /* Tax deduction note */
+        .deduction-note {
+            margin: var(--spacing-sm) var(--spacing-lg);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: rgba(39,174,96,0.1);
+            border-left: 3px solid var(--accent-green);
+            border-radius: var(--radius-sm);
+            color: var(--accent-green);
+            font-size: var(--font-sm);
+            font-weight: 600;
+        }
+        
+        /* Responsive design with maintained alignment */
+        @media (max-width: 640px) {
+            .logo-container {
+                flex-direction: row;
+                flex-wrap: nowrap;
+            }
+            
+            h1 {
+                font-size: 18px;
+                order: 2;
+            }
+            
+            .logo.uber {
+                order: 1;
+            }
+            
+            .logo.lyft {
+                order: 3;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: var(--spacing-sm);
+            }
+            
+            .input-label {
+                width: 100%;
+            }
+            
+            .value-display {
+                width: 100%;
+                text-align: left;
+                margin-left: 32px;
+            }
+            
+            .depreciation-formula {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            
+            .formula-operator {
+                text-align: center;
+                margin: 4px 0;
+            }
+            
+            .formula-item {
+                width: 100%;
+            }
+            
+            input[type="number"], input[type="text"] {
+                width: clamp(80px, 20vw, 120px);
+            }
+            
+            select {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .summary-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .summary-card .cost-badge {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (min-width: 641px) and (max-width: 900px) {
+            .depreciation-formula {
+                gap: 10px;
+            }
+        }
+        
+        /* Height optimization for mobile */
+        @media (max-height: 700px) {
+            .header {
+                padding: 15px;
+            }
+            
+            .content-wrapper {
+                padding: 10px;
+            }
+            
+            .input-group {
+                padding: 8px 12px;
+            }
+            
+            .section-header {
+                padding: 8px 12px;
+            }
+        }
+        
+        /* Divider with consistent spacing */
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+            margin: var(--spacing-lg) 0;
+        }
+        
+        /* Actual expense input special case */
+        #actualExpenseWrapper {
+            display: none;
+        }
+        
+        #actualExpenseWrapper input {
+            width: 100px;
+            margin-left: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo uber">UBER</div>
+                <h1>Rideshare True Profit Calculator</h1>
+                <div class="logo lyft">Lyft</div>
+            </div>
+            <p class="tagline">Discover what you really make driving for Uber or Lyft</p>
+        </div>
+        
+        <div class="content-wrapper">
+            <!-- Operating Costs Section -->
+            <div class="calculator-section">
+                <div class="section-header">
+                    <span class="section-icon">⚙️</span>
+                    True Car Operating Costs (Per Mile)
+                </div>
+                
+                <!-- Gas Cost -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">⛽</div>
+                        <div class="label-content">
+                            <div class="label-title">Gas Cost</div>
+                            <div class="input-wrapper">
+                                $<input type="text" id="gasPrice" value="4.00" data-type="gas">
+                                <span>per gallon /</span>
+                                <input type="number" id="mpg" value="42" step="1">
+                                <span>MPG</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span class="cost-badge orange" id="gasCost">$0.095</span>
+                    </div>
+                </div>
+                
+                <!-- Oil Change -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">🛢️</div>
+                        <div class="label-content">
+                            <div class="label-title">Oil Change</div>
+                            <div class="input-wrapper">
+                                $<input type="text" id="oilCost" value="80" data-type="dollar">
+                                <span>every</span>
+                                <input type="text" id="oilMiles" value="5,000" data-type="miles">
+                                <span>miles</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span class="cost-badge orange" id="oilPerMile">$0.016</span>
+                    </div>
+                </div>
+                
+                <!-- Tires -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">🚙</div>
+                        <div class="label-content">
+                            <div class="label-title">Tires</div>
+                            <div class="input-wrapper">
+                                $<input type="text" id="tireCost" value="600" data-type="dollar">
+                                <span>for 4 tires every</span>
+                                <input type="text" id="tireMiles" value="45,000" data-type="miles">
+                                <span>miles</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span class="cost-badge orange" id="tirePerMile">$0.013</span>
+                    </div>
+                </div>
+                
+                <!-- Repairs -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">🔧</div>
+                        <div class="label-content">
+                            <div class="label-title">Repairs & Maintenance</div>
+                            <div class="input-wrapper">
+                                $<input type="text" id="repairCost" value="2,000" data-type="dollar">
+                                <span>per year ÷</span>
+                                <input type="text" id="annualMiles" value="60,000" data-type="miles">
+                                <span>miles/year</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span class="cost-badge orange" id="repairPerMile">$0.033</span>
+                    </div>
+                </div>
+                
+                <!-- Depreciation -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">📉</div>
+                        <div class="label-content">
+                            <div class="label-title">Depreciation</div>
+                            <div class="depreciation-formula">
+                                <div class="formula-item">
+                                    <span class="formula-label">Purchase Price</span>
+                                    <div>$<input type="text" id="purchase" value="13,000" data-type="dollar"></div>
+                                </div>
+                                <span class="formula-operator">−</span>
+                                <div class="formula-item">
+                                    <span class="formula-label">Expected Selling</span>
+                                    <div>$<input type="text" id="resale" value="5,000" data-type="dollar"></div>
+                                </div>
+                                <span class="formula-operator">÷</span>
+                                <div class="formula-item">
+                                    <span class="formula-label">Lifetime Miles</span>
+                                    <input type="text" id="totalMiles" value="100,000" data-type="miles">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span class="cost-badge orange" id="depreciation">$0.080</span>
+                    </div>
+                </div>
+                
+                <!-- Insurance -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">🛡️</div>
+                        <div class="label-content">
+                            <div class="label-title">Car Insurance</div>
+                            <div class="input-wrapper">
+                                $<input type="text" id="insurance" value="135" data-type="dollar">
+                                <span>per month ÷</span>
+                                <input type="text" id="monthlyMiles" value="5,000" data-type="miles">
+                                <span>miles/month</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span class="cost-badge orange" id="insurancePerMile">$0.027</span>
+                    </div>
+                </div>
+                
+                <!-- Total -->
+                <div class="summary-card total">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 24px;">📊</span>
+                        <span>Total Cost per Mile</span>
+                    </div>
+                    <span id="totalCostPerMile" style="font-size: 20px;">$0.264</span>
+                </div>
+            </div>
+            
+            <!-- Profitability Analysis Section -->
+            <div class="calculator-section">
+                <div class="section-header">
+                    <span class="section-icon">💰</span>
+                    Profitability Calculator
+                </div>
+                
+                <!-- Earnings -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">💵</div>
+                        <div class="label-content">
+                            <div class="label-title">
+                                Earnings (After Platform Fees)
+                                <span class="info-pill">Include tips</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        $<input type="text" id="earnings" value="88" data-type="dollar">
+                    </div>
+                </div>
+                
+                <!-- Miles -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">🛣️</div>
+                        <div class="label-content">
+                            <div class="label-title">Total Miles Driven</div>
+                            <div class="label-subtitle">(Search + Pickup Miles Included)</div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <input type="text" id="milesDriven" value="120" data-type="miles">
+                        <span>miles</span>
+                    </div>
+                </div>
+                
+                <!-- Hours -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">⏱️</div>
+                        <div class="label-content">
+                            <div class="label-title">Hours Online</div>
+                            <div class="label-subtitle">(Search + Pickup Hours Included)</div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <input type="number" id="hoursOnline" value="5" step="0.1">
+                        <span>hours</span>
+                    </div>
+                </div>
+                
+                <div class="section-divider"></div>
+                
+                <!-- Operating Cost -->
+                <div class="summary-card highlight">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">🚗</span>
+                        <div>
+                            <div style="font-weight: 600;">Vehicle Operating Cost</div>
+                            <div style="font-size: 13px; color: #6c757d;" id="operatingCostCalc">($0.264/mile × 120 miles)</div>
+                        </div>
+                    </div>
+                    <span class="cost-badge red" id="operatingCost" style="font-size: 16px;">$31.68</span>
+                </div>
+                
+                <!-- Profit Before Tax -->
+                <div class="summary-card highlight">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">📈</span>
+                        <span style="font-weight: 700;">Profit Before Taxes</span>
+                    </div>
+                    <span class="cost-badge green" id="beforeTax" style="font-size: 18px;">$56.22</span>
+                </div>
+                
+                <div class="section-divider"></div>
+                
+                <!-- Tax Section -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">📋</div>
+                        <div class="label-content">
+                            <div class="label-title">Tax Method</div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <select id="taxMethod" onchange="calculate()">
+                            <option value="standard">Standard Mileage</option>
+                            <option value="actual">Actual Expenses</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Tax Deduction -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">✅</div>
+                        <div class="label-content">
+                            <div class="label-title">Tax Deduction</div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span class="cost-badge green" id="deduction">-$84.00</span>
+                        <span id="actualExpenseWrapper">
+                            $<input type="text" id="actualExpense" value="32" data-type="dollar">
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="deduction-note" id="deductionNote">
+                    120 miles × $0.70 (IRS standard) = $84.00
+                </div>
+                
+                <!-- Taxable Income -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">📝</div>
+                        <div class="label-content">
+                            <div class="label-title">Taxable Income</div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span style="font-weight: 700; font-size: 16px;" id="taxableIncome">$3.90</span>
+                    </div>
+                </div>
+                
+                <!-- Tax Rate -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon">🏛️</div>
+                        <div class="label-content">
+                            <div class="label-title">
+                                Tax Rate
+                                <span class="info-pill">
+                                    15.3% Self-Employment + 
+                                    <input type="number" id="incomeTax" value="15" step="1" style="width: 45px; padding: 3px 5px; font-size: 13px; font-weight: 600; display: inline-block;">% Income Tax
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <span style="font-weight: 700;" id="taxRate">30.3%</span>
+                    </div>
+                </div>
+                
+                <!-- Total Tax -->
+                <div class="summary-card highlight">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">💸</span>
+                        <span style="font-weight: 700;">Total Tax Due</span>
+                    </div>
+                    <span class="cost-badge red" id="totalTax" style="font-size: 16px;">$1.18</span>
+                </div>
+            </div>
+            
+            <!-- Final Results -->
+            <div class="results-section">
+                <div class="profit-summary">
+                    <div class="profit-title">💰 PROFIT AFTER TAXES</div>
+                    <div class="profit-amount" id="afterTax">$55.04</div>
+                    <div class="hourly-rate">
+                        <span id="hourlyRate">$11.01</span> per hour
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Format number with comma separators
+        function formatWithCommas(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // Parse number from formatted string
+        function parseFormattedNumber(str) {
+            return parseFloat(str.toString().replace(/,/g, '')) || 0;
+        }
+        
+        // Handle input formatting for miles and dollars
+        function formatInput(input, preserveCursor = true) {
+            const type = input.getAttribute('data-type');
+            let value = input.value;
+            let cursorPos = input.selectionStart;
+            
+            // Store original value for cursor calculation
+            const originalValue = value;
+            
+            // Remove commas first
+            value = value.replace(/,/g, '');
+            
+            // Remove non-numeric characters based on type
+            if (type === 'dollar') {
+                // Dollar fields - only integers
+                value = value.replace(/[^0-9]/g, '');
+            } else if (type === 'gas') {
+                // Gas price - allow decimal point
+                value = value.replace(/[^0-9.]/g, '');
+                // Keep only first decimal point
+                const parts = value.split('.');
+                if (parts.length > 2) {
+                    value = parts[0] + '.' + parts.slice(1).join('');
+                }
+                // Limit to 2 decimal places
+                if (parts.length === 2 && parts[1].length > 2) {
+                    value = parts[0] + '.' + parts[1].substring(0, 2);
+                }
+            } else {
+                // Other fields
+                value = value.replace(/[^0-9.]/g, '');
+            }
+            
+            if (value === '' && type !== 'gas') return;
+            
+            // Format based on type
+            if (type === 'miles') {
+                const numValue = parseFloat(value) || 0;
+                input.value = formatWithCommas(Math.floor(numValue));
+            } else if (type === 'dollar') {
+                const numValue = parseFloat(value) || 0;
+                input.value = formatWithCommas(Math.floor(numValue));
+            } else if (type === 'gas') {
+                // Special handling for gas price
+                if (value === '') {
+                    input.value = '';
+                } else if (value === '.') {
+                    input.value = '0.';
+                } else {
+                    const numValue = parseFloat(value) || 0;
+                    if (value.endsWith('.')) {
+                        // Keep the decimal point while typing
+                        input.value = numValue.toString() + '.';
+                    } else if (value.includes('.')) {
+                        const parts = value.split('.');
+                        if (parts[1] === '') {
+                            // Just typed decimal point
+                            input.value = parts[0] + '.';
+                        } else if (parts[1].length === 1) {
+                            // One decimal place
+                            input.value = numValue.toFixed(1);
+                        } else {
+                            // Two decimal places
+                            input.value = numValue.toFixed(2);
+                        }
+                    } else {
+                        input.value = numValue.toString();
+                    }
+                }
+            } else {
+                const numValue = parseFloat(value) || 0;
+                input.value = numValue;
+            }
+            
+            // Restore cursor position
+            if (preserveCursor && document.activeElement === input) {
+                // Calculate how many commas were added before cursor
+                let commasBeforeCursor = 0;
+                const newValue = input.value;
+                for (let i = 0; i < Math.min(cursorPos, newValue.length); i++) {
+                    if (newValue[i] === ',') {
+                        commasBeforeCursor++;
+                    }
+                }
+                
+                // Adjust cursor position
+                const newCursorPos = Math.min(cursorPos + commasBeforeCursor, newValue.length);
+                input.setSelectionRange(newCursorPos, newCursorPos);
+            }
+        }
+        
+        // Add formatting to all inputs on load and change
+        document.querySelectorAll('input[data-type]').forEach(input => {
+            // Format on input
+            input.addEventListener('input', function(e) {
+                formatInput(this, true);
+                calculate();
+            });
+            
+            // Initial format
+            formatInput(input, false);
+        });
+        
+        function calculate() {
+            // Get cost inputs (parse from formatted values)
+            const gasPrice = parseFormattedNumber(document.getElementById('gasPrice').value);
+            const mpg = parseFormattedNumber(document.getElementById('mpg').value) || 1;
+            const oilCost = parseFormattedNumber(document.getElementById('oilCost').value);
+            const oilMiles = parseFormattedNumber(document.getElementById('oilMiles').value) || 1;
+            const tireCost = parseFormattedNumber(document.getElementById('tireCost').value);
+            const tireMiles = parseFormattedNumber(document.getElementById('tireMiles').value) || 1;
+            const repairCost = parseFormattedNumber(document.getElementById('repairCost').value);
+            const annualMiles = parseFormattedNumber(document.getElementById('annualMiles').value) || 1;
+            const purchase = parseFormattedNumber(document.getElementById('purchase').value);
+            const resale = parseFormattedNumber(document.getElementById('resale').value);
+            const totalMiles = parseFormattedNumber(document.getElementById('totalMiles').value) || 1;
+            const insurance = parseFormattedNumber(document.getElementById('insurance').value);
+            const monthlyMiles = parseFormattedNumber(document.getElementById('monthlyMiles').value) || 1;
+            
+            // Calculate per mile costs
+            const gasCostPerMile = gasPrice / mpg;
+            const oilPerMile = oilCost / oilMiles;
+            const tirePerMile = tireCost / tireMiles;
+            const repairPerMile = repairCost / annualMiles;
+            const depreciationPerMile = (purchase - resale) / totalMiles;
+            const insurancePerMile = insurance / monthlyMiles;
+            
+            const totalCostPerMile = gasCostPerMile + oilPerMile + tirePerMile + 
+                                    repairPerMile + depreciationPerMile + insurancePerMile;
+            
+            // Update cost displays
+            document.getElementById('gasCost').textContent = `${gasCostPerMile.toFixed(3)}`;
+            document.getElementById('oilPerMile').textContent = `${oilPerMile.toFixed(3)}`;
+            document.getElementById('tirePerMile').textContent = `${tirePerMile.toFixed(3)}`;
+            document.getElementById('repairPerMile').textContent = `${repairPerMile.toFixed(3)}`;
+            document.getElementById('depreciation').textContent = `${depreciationPerMile.toFixed(3)}`;
+            document.getElementById('insurancePerMile').textContent = `${insurancePerMile.toFixed(3)}`;
+            document.getElementById('totalCostPerMile').textContent = `${totalCostPerMile.toFixed(3)}`;
+            
+            // Get profit inputs
+            const earnings = parseFormattedNumber(document.getElementById('earnings').value);
+            const milesDriven = parseFormattedNumber(document.getElementById('milesDriven').value);
+            const hoursOnline = parseFormattedNumber(document.getElementById('hoursOnline').value) || 1;
+            const incomeTaxRate = parseFormattedNumber(document.getElementById('incomeTax').value);
+            const taxMethod = document.getElementById('taxMethod').value;
+            
+            // Calculate profit
+            const operatingCost = totalCostPerMile * milesDriven;
+            const beforeTax = earnings - operatingCost;
+            
+            // Update operating cost calculation display
+            document.getElementById('operatingCostCalc').textContent = 
+                `(${totalCostPerMile.toFixed(3)}/mile × ${formatWithCommas(Math.floor(milesDriven))} miles)`;
+            
+            // Update actual expense input default
+            if (taxMethod === 'actual' && !document.getElementById('actualExpense').hasAttribute('data-user-modified')) {
+                document.getElementById('actualExpense').value = Math.floor(operatingCost);
+            }
+            
+            // Tax calculation
+            let deduction = 0;
+            let taxableIncome = 0;
+            
+            if (taxMethod === 'standard') {
+                deduction = milesDriven * 0.70;
+                taxableIncome = Math.max(0, earnings - deduction);
+                document.getElementById('deductionNote').textContent = 
+                    `${formatWithCommas(Math.floor(milesDriven))} miles × $0.70 (IRS standard) = ${deduction.toFixed(2)}`;
+                document.getElementById('deductionNote').style.display = 'block';
+                document.getElementById('deduction').style.display = 'inline-block';
+                document.getElementById('actualExpenseWrapper').style.display = 'none';
+                document.getElementById('actualExpense').removeAttribute('data-user-modified');
+            } else {
+                const actualExpense = parseFormattedNumber(document.getElementById('actualExpense').value);
+                deduction = actualExpense;
+                taxableIncome = Math.max(0, earnings - deduction);
+                document.getElementById('deductionNote').style.display = 'none';
+                document.getElementById('deduction').style.display = 'none';
+                document.getElementById('actualExpenseWrapper').style.display = 'inline-block';
+            }
+            
+            // Calculate taxes - Self-employment tax on taxable income, not gross
+            const selfEmploymentTax = Math.max(0, taxableIncome) * 0.9235 * 0.153;
+            const incomeTax = Math.max(0, taxableIncome) * (incomeTaxRate / 100);
+            const totalTax = selfEmploymentTax + incomeTax;
+            
+            const afterTax = beforeTax - totalTax;
+            const hourlyRate = hoursOnline > 0 ? afterTax / hoursOnline : 0;
+            
+            // Update displays
+            document.getElementById('operatingCost').textContent = `${operatingCost.toFixed(2)}`;
+            document.getElementById('beforeTax').textContent = `${beforeTax.toFixed(2)}`;
+            
+            // Update profit/loss styling
+            const beforeTaxElement = document.getElementById('beforeTax');
+            if (beforeTax >= 0) {
+                beforeTaxElement.className = 'cost-badge green';
+            } else {
+                beforeTaxElement.className = 'cost-badge red';
+            }
+            
+            document.getElementById('deduction').textContent = `-${deduction.toFixed(2)}`;
+            document.getElementById('taxableIncome').textContent = `${taxableIncome.toFixed(2)}`;
+            document.getElementById('taxRate').textContent = `${(15.3 + incomeTaxRate).toFixed(1)}%`;
+            document.getElementById('totalTax').textContent = `${totalTax.toFixed(2)}`;
+            
+            document.getElementById('afterTax').textContent = `${afterTax.toFixed(2)}`;
+            document.getElementById('hourlyRate').textContent = `${hourlyRate.toFixed(2)}`;
+            
+            // Color code final results
+            const profitSummary = document.querySelector('.profit-summary');
+            if (afterTax >= 50) {
+                profitSummary.style.background = 'linear-gradient(135deg, #27ae60 0%, #229954 100%)';
+            } else if (afterTax >= 25) {
+                profitSummary.style.background = 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)';
+            } else if (afterTax >= 0) {
+                profitSummary.style.background = 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)';
+            } else {
+                profitSummary.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+            }
+        }
+        
+        // Track user modifications
+        document.getElementById('actualExpense').addEventListener('input', function() {
+            this.setAttribute('data-user-modified', 'true');
+        });
+        
+        // Add event listeners for non-formatted inputs
+        document.querySelectorAll('input:not([data-type]), select').forEach(input => {
+            if (input.id !== 'actualExpense') {
+                input.addEventListener('input', calculate);
+            }
+        });
+        
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
